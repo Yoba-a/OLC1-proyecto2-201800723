@@ -1,0 +1,27 @@
+{% extends "index.html" %}
+
+{% block title %} Sign In {% endblock %} 
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="header">
+        <button id="run-btn">correr</button>
+    </div>
+    <form method="post" action="/prueba" id="form_code" name="form_code"   class="mt-0">
+    <div class="d-none">
+        <input type="hidden text" name="codevalue" id="codevalue" />
+    </div>
+
+    <div class="editor"  >
+        <div class="code">
+            <div class="js-code">
+
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}
+{% block javascripts %}{% endblock javascripts %}

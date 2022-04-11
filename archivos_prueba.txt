@@ -1,0 +1,124 @@
+int edad = 18;
+boolean banderaedad = false;
+banderaedad = edad > 17 ? true : false;
+INT EDAD = 18 ;
+if(h == 1){
+	int a = 15;
+    print("soy el nuimero a" +a);
+}
+
+int numero;
+int var1, var2, var3;
+string cadena = "hola";
+char var_1 = 'a';
+boolean verdadera;
+boolean flag1, flag2, flag3 = true ;
+char ch1, ch2, ch3 = 'R';
+
+numero =4;
+verdadero = true; 
+cadena = "varlor =" + valor ;
+
+int edad = (int) 18.6;
+CHAR LETR = (CHAR)70;
+double numero = (double) 16;
+
+//incrementos 
+
+int edad = 18 ;
+edad++;
+edad--;
+
+int anio = 2020;
+anio = 1 + anio++;
+anio = anio --;
+
+//vectores 
+
+int vector1[] = new int[4];
+char vectorDos[][] = new char [4][4];
+
+string vector2[] = ["hola", "mundo"];
+char vectordosd2 [][] = [[0,0],[0,0]];
+string valorPosicion = vertor2[0];
+char vectorDos[][]= new char[4][4];
+char valor = vectorDos[0][0];
+vector[1] = "olc1";
+int vector2[] = [2020,2021,2022];
+
+//if
+
+if(x<50){
+	println("menor que 50");
+}
+
+if(x<50){
+	println("menor que 50");
+}else
+{
+	println("menor que 50");
+}
+
+// IF ELSE IF 
+if(x<50){
+	println("menor que 50");
+}else if(x<= 50 && x> 0)
+{
+	print("menor que 50 ");
+    if(x >5){
+    	print("numero mayor 25");
+    }
+    else{
+    	print("numero mayor 25");
+    }
+}else if(x<= 50 && x> 0)
+{
+	print("menor que 50 ");
+    if(x >5){
+    	print("numero mayor 25");
+    }
+    else{
+    	print("numero mayor 25");
+    }
+}else if(x<= 50 && x> 0)
+{
+	print("menor que 50 ");
+    if(x >5){
+    	print("numero mayor 25");
+    }
+    else{
+    	print("numero mayor 25");
+    }
+}else{
+		println("menor que 50");
+}
+
+int edad = 18 ;
+
+switch(edad){
+	case 10 : 
+    	println("tengo 10 anios");
+        break;
+     case 123 : 
+    	println("tengo 10 anios");
+        break;
+	case 1123 : 
+    	println("tengo 10 anios");
+        break;
+     case 14 : 
+    	println("tengo 10 anios");
+        break;
+}
+
+
+while(x<100){
+	if(x>50){
+    }else{
+    }
+	x++;
+}
+
+
+for(int a =0 ; i<3; i++){
+	print("i=" +i);
+}

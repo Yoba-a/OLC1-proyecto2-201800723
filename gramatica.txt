@@ -1,0 +1,219 @@
+INIT 
+    : LINS EOF;
+
+
+LINS
+    : LINS INSTRUCC 
+    | INSTRUCC 
+    ;
+
+INSTRUCC
+    : Rprintln parA EXP parC pcoma 
+    | Rprint parA EXP parC pcoma
+    | DECLARAR pcoma 
+    | ASIGNAR pcoma 
+    | IF
+    | DOWHILE pcoma
+    | WHILE
+    | FOR 
+    | SWITCH
+    | Rbreak pcoma
+    | Rcontinue pcoma
+    | METODOS
+    | LLAMADA pcoma
+    | RUNMETOD
+    | RETORNAR
+    | error INS 
+    ;
+
+RETORNAR
+    : Rreturn EXP pcoma
+    | Rreturn pcoma
+    ;
+
+
+DECLARAR // aqui inician las declaraciones de variables
+    : DECLARACION_INDV LST_IDS 
+    | DECLARACION_INDV
+    ;
+
+
+DECLARACION_INDV  // esta funciona para hacer una declaracion simple
+    : TIPO ID igual EXP
+    | TIPO ID igual CASTEO
+    | TIPO ID
+    | TIPO ID corA corC  igual Rnew TIPO corA EXP corC
+    | TIPO ID corA corC  igual  corA LST_EXP corC
+    | TIPO ID corA corC corA corC igual Rnew TIPO corA EXP corC corA EXP corC
+    | TIPO ID corA corC corA corC igual  corA AUXVECTOR corC 
+    | TIPO error pcoma 
+    ;
+LST_IDS //esta funciona para devolver ,id,id ,id para declarar variables
+    : LST_IDS coma ID
+    | LST_IDS coma ID igual EXP
+    | coma ID
+    ;
+
+METODOS
+    : ID parA parC dosPun TIPO BODY
+    | ID parA parC dosPun Rvoid BODY
+    | ID parA parC dosPun BODY
+    | ID parA PARAMETROS parC dosPun TIPO BODY
+    | ID parA PARAMETROS parC dosPun Rvoid  BODY
+    | ID parA PARAMETROS parC dosPun BODY
+    | ID parA error dosPun TIPO BODY  
+    ;
+PARAMETROS
+    : PARAMETROS coma TIPO ID
+    | TIPO ID
+    ;
+
+ASIGNAR
+    : ID igual EXP
+    | ID igual CASTEO
+    | ID INCorDEC
+    | ID corA EXP corC igual EXP
+    | ID corA EXP corC  corA EXP corC igual corA EXP corC  corA EXP corC
+    | ID error pcoma
+        
+    ;
+
+
+
+INCorDEC
+    : inc
+    | dec
+    ;
+IF
+    : Rif parA EXP parC BODY              
+    | Rif parA EXP parC BODY Relse BODY 
+    | Rif parA EXP parC BODY Relse IF
+    | Rif error llavA
+       
+    ;
+///////////////////    
+SWITCH
+    : Rswitch parA EXP parC llavA LCASOS Rdefault dosPun LINS llavC  
+    | Rswitch parA EXP parC llavA LCASOS llavC                        
+    | Rswitch error llavC  
+        
+    ;
+
+ELSEIF
+    : Rif parA EXP parC BODY        
+    | ELSEIF Relse Rif parA EXP parC BODY 
+    | Rif error parC
+;
+
+LCASOS
+    :Rcase EXP dosPun LINS               
+    |LCASOS Rcase EXP dosPun LINS        
+    |Rcase error parC                 
+;
+
+DOWHILE
+    :Rdo BODY Rwhile parA EXP parC   
+    |Rdo error pcoma                       
+;
+
+WHILE
+    :Rwhile parA EXP parC BODY        
+    |Rwhile error parC                   
+;
+FOR
+    :Rfor parA ASIGNAR pcoma EXP pcoma ACTUALIZAR parC BODY         
+    |Rfor parA DECLARAR pcoma EXP pcoma ACTUALIZAR parC BODY        
+    |Rfor error llavC                                                   
+;
+
+
+BODY
+    : llavA LINS llavC   
+    | llavA llavC         
+    | llavC error llavC  
+;
+
+
+ACTUALIZAR
+    : ID igual EXP         
+    | ID INCorDEC             
+    | ID error             
+;
+
+LLAMADA 
+    : ID parA parC                 
+    | ID parA L_EXP parC          
+    | Rrun ID parA parC           
+    | Rrun ID parA L_EXP parC     
+;
+
+CASTEO
+    : parA TIPO_AUX parC EXP       
+    | parA error EXP             
+;
+////////////////////////////////////////////////////////////////
+
+TIPO
+    : Rint
+    | Rdouble
+    | Rstring
+    | Rchar
+    | Rboolean
+    ;
+
+TIPO_AUX
+    : Rint          
+    | Rdouble       
+    | Rstring       
+    | Rchar         
+;
+EXP
+    : EXP mas EXP
+    | EXP menos EXP
+    | EXP mul EXP
+    | EXP div EXP
+    | EXP mod EXP
+    | EXP min EXP
+    | EXP max EXP
+    | EXP notEquals EXP
+    | EXP equals EXP
+    | EXP minEqual EXP
+    | EXP maxEqual EXP
+    | EXP and EXP
+    | EXP or EXP
+    | EXP opt EXP dosPun EXP                  
+    | corA EXP corC
+    | EXP inc
+    | EXP dec
+    | not EXP %prec unot
+    | menos EXP %prec umenos 
+    | Cadena
+    | Char
+    | ID
+    | ID parA parC
+    | ID parA LST_EXP parC
+    | ID corA EXP corC
+    | ID corA EXP corC corA EXP corC 
+    | entero
+    | decimal
+    | lit_boleanV
+    | lit_boleanF
+    | parA EXP parC
+    | parA TIPO_AUX parC %prec ucast
+    | RtoStr parA EXP parC %prec ucast
+    | RtoLower parA EXP parC %prec ucast 
+    | RtoUpper parA EXP parC %prec ucast
+    | Rround parA EXP parC %prec ucast
+    | Rlength parA EXP parC %prec ucast
+    | Rtypeof parA EXP parC %prec ucast
+    
+    ;
+
+AUXVECTOR 
+    : AUXVECTOR coma corA LST_EXP corC 
+    | corA LST_EXP corC
+    ;
+LST_EXP 
+    : LST_EXP coma EXP
+    | EXP
+    ;
