@@ -1,0 +1,112 @@
+<nav id="sidebarMenu" name ="sidebarMenu" class="sidebar d-md-block bg-dark text-white collapse" data-simplebar ="init">
+    <div class="sidebar-inner px-2 pt-3">
+      <div class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4">
+       
+        <div class="collapse-close d-md-none">
+          <a href="#sidebarMenu" class="fas fa-times" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
+            aria-controls="sidebarMenu" aria-expanded="true" aria-label="Toggle navigation"></a>
+        </div>
+      </div>
+      <ul class="nav flex-column pt-3 pt-md-0">
+        
+        
+        <li class="nav-item">
+          <a id="run-btn" class="nav-link d-flex align-items-center">
+            <span>
+                  <span class="sidebar-icon"><span class="fas fa-play"></span></span>
+                  <span class="mt-1 ms-1 sidebar-text">Ejecutar</span>
+            </span>
+          </a>
+        </li>
+        <li class="nav-item">
+            <span
+              class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+              data-bs-toggle="collapse" data-bs-target="#submenu-app2">
+              <span>
+                <span class="sidebar-icon"><span class="fas fa-bug"></span></span>
+                <span class="sidebar-text">Reportes</span>
+              </span>
+              <span class="link-arrow"><span class="fas fa-chevron-right"></span></span>
+            </span>
+            <div class="multi-level collapse "
+              role="list" id="submenu-app2" aria-expanded="false">
+              <ul class="flex-column nav">
+                <li class="nav-item ">
+                  <a class="nav-link" href="/bootstrap-tables.html">
+                    <span>
+                        <span class="sidebar-icon"><span class="fa-regular fa-rectangle-xmark"></span></span>
+                        <span class="sidebar-text">Reporte de Errores</span>
+                  </span> 
+                    
+                  </a>
+                </li>
+                <ul class="flex-column nav">
+                  <li class="nav-item ">
+                    <a class="nav-link" href="/bootstrap-tables.html">
+                        <span>
+                            <span class="sidebar-icon"><span class="fas fa-tree"></span></span>
+                            <span class="sidebar-text">Arbol AST</span>
+                      </span> 
+                      
+                    </a>
+                  </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="/bootstrap-tables.html">
+                    <span>
+                        <span class="sidebar-icon"><span class="fas fa-table"></span></span>
+                        <span class="sidebar-text">Tabla de Simbolos</span>
+                  </span> 
+                    
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        <li class="nav-item">
+          <span
+            class="nav-link  collapsed  d-flex justify-content-between align-items-center"
+            data-bs-toggle="collapse" data-bs-target="#submenu-app">
+            <span>
+              <span class="sidebar-icon"><span class="fas fa-folder-open"></span></span>
+              <span class="sidebar-text">Menu Archivos</span>
+            </span>
+            <span class="link-arrow"><span class="fas fa-chevron-right"></span></span>
+          </span>
+          <div class="multi-level collapse "
+            role="list" id="submenu-app" aria-expanded="false">
+            <ul class="flex-column nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="/bootstrap-tables.html">
+                    <span>
+                        <span class="sidebar-icon"><span class="fa-regular fa-file-lines"></span></span>
+                        <span class="sidebar-text">Abrir Archivo</span>
+                  </span> 
+                  
+                </a>
+              </li>
+              <ul class="flex-column nav">
+                <li class="nav-item ">
+                  <a class="nav-link" href="/bootstrap-tables.html">
+                    <span>
+                        <span class="sidebar-icon"><span class="fa-regular fa-file-code"></span></span>
+                        <span class="sidebar-text">Crear Archivo</span>
+                  </span> 
+                  </a>
+                </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/bootstrap-tables.html">
+                    <span>
+                        <span class="sidebar-icon"><span class="fa-regular fa-floppy-disk"></span></span>
+                        <span class="sidebar-text">Guardar Archivo</span>
+                  </span> 
+
+
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        
+      </ul>
+    </div>
+  </nav>

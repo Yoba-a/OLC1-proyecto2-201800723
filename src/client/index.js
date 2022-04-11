@@ -6,6 +6,14 @@ const jsEditor = CodeMirror(document.querySelector(".editor .code .js-code"), {
   mode:"text/x-ceylon"
 });
 
+const code_ouput = CodeMirror(document.querySelector(".editor .code .code_ouput"), {
+  styleActiveLine: true,
+  lineNumbers: true,
+  tabSize:4,
+  matchBrackets: true,
+  mode:"text/x-ceylon"
+});
+
 
 $("#run-btn").on("click", function () {
   document.getElementById("codevalue").value = jsEditor.getValue();
