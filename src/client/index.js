@@ -23,8 +23,15 @@ $("#rep_errores").on("click", function () {
     document.getElementById("contenido").className ="card animate__animated animate__jackInTheBox";
     document.getElementById("contenido").innerHTML = tblErrores;
   }
-
 });
+
+$("#rep_tblSimbolos").on("click", function () {
+  if(tblSimbolos !== ""){
+    document.getElementById("contenido").className ="card animate__animated animate__jackInTheBox";
+    document.getElementById("contenido").innerHTML = tblSimbolos;
+  }
+});
+
 $("#rep_ast").on("click", function () {
   if(dot !== ""){
     document.getElementById("contenido").className ="card animate__animated animate__jackInTheBox";
@@ -62,6 +69,7 @@ $("#run-btn").on("click", function () {
       console.log(datos);
       if(datos.exito ==="exito"){
         //document.getElementById("contenido").className ="card animate__animated animate__jackInTheBox";
+        
         Swal.fire({
           title: 'Codigo leido exitosamente',
           width: 600,
@@ -75,7 +83,9 @@ $("#run-btn").on("click", function () {
             no-repeat
           `
         })
+        code_ouput.setValue(datos.code);
         tblErrores = datos.htmlErrores;
+        tblSimbolos = datos.simbolos;
         dot = datos.dot;
       }else{
         Swal.fire({

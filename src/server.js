@@ -1,11 +1,12 @@
 import express from 'express';
-
+const {Interprete} =  require('./Logic/Interprete')
 const nunjucks = require('nunjucks');
 
 // initializing packages
 const app = express();
 const path = require('path');
 const {TablaErrores} = require('./Estructuras/ManejoErrores/TablaErrores.js') ;
+const {TablaSimbolos} = require('./Estructuras/TablaSimbolos/TablaSimbolos.js');
 var bodyParser = require('body-parser')
 const parser = require('./gramatica'); 
 nunjucks.configure(__dirname+'/client', {
@@ -32,16 +33,16 @@ app.use((req, res, next) => {
 
 // middlwares
 function imprimir(raiz){
-  var texto ="";
+  var code ="";
   var contador=1;
-  texto+="digraph G{";
-  texto+="Node0[label=\"" + escapar(raiz.name +" | "+raiz.value) + "\"];\n";
+  code+="digraph G{";
+  code+="Node0[label=\"" + escapar(raiz.name +" | "+raiz.value) + "\"];\n";
 
   recorrido("Node0",raiz);
 
-  texto+= "}";
+  code+= "}";
 
-  return texto;
+  return code;
 
   function recorrido(padre,hijos){
     if(hijos === undefined || hijos === null) return;
@@ -52,8 +53,8 @@ function imprimir(raiz){
     hijos.hijos.forEach(nodito=> {
       if(typeof nodito.name=="undefined")return;
       let nombrehijo="Node"+contador;
-      texto+=nombrehijo+"[label=\"" + escapar(nodito.name +" | "+nodito.value) + "\"];\n";
-      texto+=padre+"->"+nombrehijo+";\n";
+      code+=nombrehijo+"[label=\"" + escapar(nodito.name +" | "+nodito.value) + "\"];\n";
+      code+=padre+"->"+nombrehijo+";\n";
       contador++;
       recorrido(nombrehijo,nodito);
     })
@@ -78,14 +79,22 @@ app.get('/api', (req, res) => {
 });
 
 app.post('/prueba', urlencodedParser, (req, res) => {
+  TablaErrores.getInstance().reiniciar();
+  TablaSimbolos.getInstance().reiniciar();
   console.log('prueba de post')
   console.log(req.body.code);
   const codevalue = req.body.code;
   try {
     const resultado =  parser.parse(codevalue);  
+    var int  =  new Interprete();
+    const dot = imprimir(resultado);
+    var code = "";
+    //var code = int.analizar(resultado);
+    console.log("codigo",code);
     var errores = TablaErrores.getInstance().getErrores();
-    const dot = imprimir(resultado)
-    res.status(200).json({exito: "exito", htmlErrores: errores ,dot: dot});
+    var simbolos = TablaSimbolos.getInstance().getSimbolos();
+    
+    res.status(200).json({exito: "exito", htmlErrores: errores ,dot: dot, code: code, simbolos:simbolos});
   } catch (error) {
     console.error(error);
     res.status(200).json({exito: "error"})

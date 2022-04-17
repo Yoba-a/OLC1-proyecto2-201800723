@@ -47,12 +47,12 @@
 ","					return 'coma'
 "."                 return 'punto'
 "int"				return 'Rint'
+"double"            return 'Rdouble'
 "char"				return 'Rchar'
 "boolean"			return 'Rboolean'
 "true"				return 'lit_boleanV'
 "false"				return 'lit_boleanF'
 "string"            return 'Rstring'
-"Double"	        return 'Rdouble'
 "new"               return 'Rnew'
 //sentencias de transferencia
 "break"             return 'Rbreak'
@@ -163,7 +163,7 @@
 
 INIT 
     : LINS EOF  {$$=new AST_Node("RAIZ","RAIZ","palabra reservada","global",this.$first_line,this._$.last_column);$$.addHijos($1);return $$};
-
+    
 //Valores AST name, value, tipo,entorno, fila, columna
 LINS
     : LINS INSTRUCC {$1.addHijos($2);$$=$1;}
@@ -190,12 +190,21 @@ INSTRUCC
     | error INSTRUCC {
      console.log("Sintactico","Error en : '"+yytext+"'",
      this._$.first_line,this._$.first_column);
-     console.log("Se recupero en ",yytext," (",this._$.last_line,",",this._$.last_column,")");}
+     console.log("Se recupero en ",yytext," (",this._$.last_line,",",this._$.last_column,")");
+     TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida" ,this._$.first_line,this._$.first_column));}
+    |  error pcoma {
+     console.log("Sintactico","Error en : '"+yytext+"'",
+     this._$.first_line,this._$.first_column);
+     console.log("Se recupero en ",yytext," (",this._$.last_line,",",this._$.last_column,")");
+     TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida" ,this._$.first_line,this._$.first_column));}
+    
     ;
 
 RETORNAR //Valores AST name, value, tipo,entorno, fila, columna
     : Rreturn EXP pcoma {$$= new AST_Node("RETURN","RETURN"); $$.addHijos(new AST_Node("return","return","return","return",this._$.first_line,this._$.first_column) ,$2) }
     | Rreturn pcoma {$$= new AST_Node("RETURN","RETURN"); $$.addHijos(new AST_Node("return","return","return","return",this._$.first_line,this._$.first_column)) }
+    | Rreturn error {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");
+      TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un return " ,this._$.first_line,this._$.first_column));}
     ;
 
 
@@ -207,62 +216,61 @@ DECLARAR // aqui inician las declaraciones de variables Valores AST name, value,
 
 DECLARACION_INDV  // esta funciona para hacer una declaracion simple
     : TIPO ID igual EXP {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column),$4)}
-    | TIPO ID igual CASTEO {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column),$4)}
     | TIPO ID {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column))}
-    | TIPO ID corA corC  igual Rnew TIPO corA EXP corC {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV");$6 = new AST_Node("NEW","NEW") ;
-    $6.addHijos($7,$9);$$.addHijos(new AST_Node("ID",$2,tipo_variable,"VECTOR",this._$.first_line,this._$.first_column),$6)}
+    | TIPO ID corA corC  igual Rnew TIPO corA EXP corC {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV");$6 = new AST_Node("NEW","NEW",$7,"NEW",this._$.first_line,this._$.first_column) ;
+      $6.addHijos($9);$$.addHijos(new AST_Node("ID",$2,$1,"VECTOR",this._$.first_line,this._$.first_column),new AST_Node("VECTOR1D","VECTOR1D"),$6)}
     | TIPO ID corA corC  igual  corA LST_EXP corC
-    {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column),$7)}
+      {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $7.tipo = tipo_variable;$$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column),new AST_Node("VECTOR1D","VECTOR1D"),$7)}
     | TIPO ID corA corC corA corC igual Rnew TIPO corA EXP corC corA EXP corC
-    {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV");$8 = new AST_Node("NEW","NEW") ;
-    $8.addHijos($9,$10,$13);$$.addHijos(new AST_Node("ID",$2,tipo_variable,"VECTOR",this._$.first_line,this._$.first_column),$8)}
+      {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV");$8 = new AST_Node("NEW","NEW",$9,"NEW",this._$.first_line,this._$.first_column) ;
+      $8.addHijos($11,$14);$$.addHijos(new AST_Node("ID",$2,tipo_variable,"VECTOR",this._$.first_line,this._$.first_column),new AST_Node("VECTOR2D","VECTOR2D"),$8)}
     | TIPO ID corA corC corA corC igual  corA AUXVECTOR corC 
-    {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VECTOR",this._$.first_line,this._$.first_column,$9))}
-    | TIPO error pcoma {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")")}
+      {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VECTOR",this._$.first_line,this._$.first_column),new AST_Node("VECTOR1D","VECTOR1D"),$9)}
     ;
 LST_IDS //esta funciona para devolver ,id,id ,id para declarar variables Valores AST name, value, tipo,entorno, fila, columna
     : LST_IDS coma ID {$1.addHijos(new AST_Node("ID",$3,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column)); $$=$1;}
     | LST_IDS coma ID igual EXP {$1.addHijos(new AST_Node("ID",$3,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column),$5); $$=$1;}
     | TIPO ID coma ID {$$= new AST_Node("ID_LIST","ID_LIST"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column));$$.addHijos(new AST_Node("ID",$4,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column))}
     | TIPO ID coma ID igual EXP {$$= new AST_Node("ID_LIST","ID_LIST"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column));$$.addHijos(new AST_Node("ID",$4,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column , $6))}
+    | TIPO error pcoma {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para una lista de variables" ,this._$.first_line,this._$.first_column));}
     ;
 
 METODOS
-    : ID parA parC dosPun TIPO BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column), $5,$6);}            
-    | ID parA parC dosPun Rvoid BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column), $5,$6);}            
-    | ID parA parC  BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column), $4);}            
-    | ID parA PARAMETROS parC dosPun TIPO BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3, $6,$7);}            
-    | ID parA PARAMETROS parC dosPun Rvoid  BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3, $6,$7);}            
-    | ID parA PARAMETROS parC  BODY  {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column), $3,$5);}            
-    | ID parA error dosPun TIPO BODY  {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    : ID parA parC dosPun TIPO BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,tipo_variable,"",this._$.first_line,this._$.last_column), $5,$6);}            
+    | ID parA parC dosPun Rvoid BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"void","",this._$.first_line,this._$.last_column), $5,$6);}            
+    | ID parA parC  BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"void","",this._$.first_line,this._$.last_column), $4);}            
+    | ID parA PARAMETROS parC dosPun TIPO BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,tipo_variable,"",this._$.first_line,this._$.last_column),$3, $6,$7);}            
+    | ID parA PARAMETROS parC dosPun Rvoid  BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"void","",this._$.first_line,this._$.last_column),$3, $6,$7);}            
+    | ID parA PARAMETROS parC  BODY  {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"void","",this._$.first_line,this._$.last_column), $3,$5);}            
+    | ID parA error dosPun TIPO BODY  {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un metodo" ,this._$.first_line,this._$.first_column));}
     ;
 PARAMETROS
     : PARAMETROS coma TIPO ID { $1.addHijos($3, new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column)); $$=$1}            
-    | TIPO ID {$$= new AST_Node("PARAMETROS","PARAMETROS"); $$.addHijos($1,new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column));}            
+    | TIPO ID {$$= new AST_Node("PARAMETROS","PARAMETROS"); $$.addHijos($1,new AST_Node("ID",$1,tipo_variable,"",this._$.first_line,this._$.last_column));}            
+    | error ID {TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para parametros" ,this._$.first_line,this._$.first_column));}
     ;
 
 ASIGNAR //Valores AST name, value, tipo,entorno, fila, columna
     : ID igual EXP {$$= new AST_Node("ASIGNAR","ASIGNAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3);}                     
-    | ID igual CASTEO {$$= new AST_Node("ASIGNAR","ASIGNAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3);}    
-    | ID INCorDEC {$$= new AST_Node("ASIGNAR","ASIGNAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$2);}    
+    | ID INCorDEC {$$= new AST_Node("ASIGNAR","ASIGNAR");$2.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column));$$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$2);}    
     | ID corA EXP corC igual EXP {$$= new AST_Node("ASIGNAR","ASIGNAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3,$6);}    
-    | ID corA EXP corC  corA EXP corC igual corA EXP corC  corA EXP corC {$$= new AST_Node("ASIGNAR","ASIGNAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3,$6,$10,$13);}    
+    | ID corA EXP corC  corA EXP corC igual  EXP  {$$= new AST_Node("ASIGNAR","ASIGNAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3,$6,$9);}    
     | ID error pcoma
-        {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")")}
+        {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para una asignacion" ,this._$.first_line,this._$.first_column));}
     ;
 
 
 
 INCorDEC
-    : inc {$$=$1}
-    | dec {$$=$1}
+    : inc {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("incdes",$1,"incdes","incdes",this._$.first_line,this._$.last_column));}
+    | dec {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("incdes",$1,"incdes","incdes",this._$.first_line,this._$.last_column));}
     ;
 IF
     : Rif parA EXP parC BODY  {$$= new AST_Node("IF","IF"); $$.addHijos($3,$5);}            
     | Rif parA EXP parC BODY Relse BODY {$$= new AST_Node("IF","IF");$6= new AST_Node("ELSE","ELSE");$6.addHijos($7); $$.addHijos($3,$5,$6);}            
     | Rif parA EXP parC BODY Relse IF {$$= new AST_Node("IF","IF");$6= new AST_Node("ELSEIF","ELSEIF");$6.addHijos($7); $$.addHijos($3,$5,$6);}            
     | Rif error llavA
-        {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}                         
+        {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un if" ,this._$.first_line,this._$.first_column));}                         
     ;
 ///////////////////    
 SWITCH
@@ -270,69 +278,70 @@ SWITCH
     | Rswitch parA EXP parC llavA LCASOS llavC  {$$= new AST_Node("SWITCH","SWITCH"); $$.addHijos($3,$6);}  
     | Rswitch parA EXP parC llavA Rdefault dosPun LINS llavC {$$= new AST_Node("SWITCH","SWITCH");$6 =new AST_Node("DEFAULT","DEFAULT");$6.addHijos($8) ; $$.addHijos($3,$6);}                        
     | Rswitch error llavC  
-        {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+        {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un switch" ,this._$.first_line,this._$.first_column));}
     ;
 
 ELSEIF
     : Rif parA EXP parC BODY {$$= new AST_Node("ELSEIF","ELSEIF"); $$.addHijos($3,$5);}                     
     | ELSEIF Relse Rif parA EXP parC BODY {$$= $1; $$.addHijos($5,$7);}   
-    | Rif error parC
+    | Rif error parC {TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un else if" ,this._$.first_line,this._$.first_column));}
 ;
 
 LCASOS
     :Rcase EXP dosPun LINS {$$= new AST_Node("CASE","CASE"); $$.addHijos($2,$4);}              
     |LCASOS Rcase EXP dosPun LINS  {$$= $1; $$.addHijos($3,$5);}   
-    |Rcase error parC                   {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    |Rcase error parC                   {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un case" ,this._$.first_line,this._$.first_column));}
 ;
 
 DOWHILE
     :Rdo BODY Rwhile parA EXP parC {$$= new AST_Node("WHILE","WHILE"); $$.addHijos($2,$5);}   
-    |Rdo error pcoma                       {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    |Rdo error pcoma                       {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un do while" ,this._$.first_line,this._$.first_column));}
 ;
 
 WHILE
     :Rwhile parA EXP parC BODY   {$$= new AST_Node("WHILE","WHILE"); $$.addHijos($3,$5);}     
-    |Rwhile error parC                    {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    |Rwhile error parC                    {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un while" ,this._$.first_line,this._$.first_column));}
 ;
 FOR
-    :Rfor parA ASIGNAR pcoma EXP pcoma ACTUALIZAR parC BODY   {$$= new AST_Node("FOR","FOR"); $$.addHijos($3,$5,$7,$9);}      
-    |Rfor parA DECLARAR pcoma EXP pcoma ACTUALIZAR parC BODY  {$$= new AST_Node("FOR","FOR"); $$.addHijos($3,$5,$7,$9);}        
-    |Rfor error llavC                                                    {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    :Rfor parA ASIGNAR pcoma EXP pcoma ASIGNAR parC BODY   {$$= new AST_Node("FOR","FOR"); $$.addHijos($3,$5,$7,$9);}      
+    |Rfor parA DECLARAR pcoma EXP pcoma ASIGNAR parC BODY  {$$= new AST_Node("FOR","FOR"); $$.addHijos($3,$5,$7,$9);}        
+    |Rfor error llavC                                                    {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un for" ,this._$.first_line,this._$.first_column));}
 ;
 
 
 BODY
     : llavA LINS llavC  {$$= new AST_Node("BODY","BODY"); $$.addHijos($2);  }  
     | llavA llavC    {$$= new AST_Node("BODY","BODY"); $$.addHijos(new AST_Node("body_null","body_null"));  }       
-    | llavC error llavC   {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    | llavC error llavC   {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para el codigo interno de un metodo" ,this._$.first_line,this._$.first_column));}
 ;
 
 
 ACTUALIZAR                                                      //Valores AST name, value, tipo,entorno, fila, columna
     : ID igual EXP {$$= new AST_Node("ACTUALIZAR","ACTUALIZAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),$3);  }                            
     | ID INCorDEC {$$= new AST_Node("ACTUALIZAR","ACTUALIZAR"); $$.addHijos(new AST_Node("ID",$1,"ID","",this._$.first_line,this._$.last_column),new AST_Node("INCDEC",$2,"INCDEC","",this._$.first_line,this._$.last_column));  }                    
-    | ID error              {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    | ID error              {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para una nueva actualizacion" ,this._$.first_line,this._$.first_column));}
 ;
 
 LLAMADA //Valores AST name, value, tipo,entorno, fila, columna
-    : ID parA parC {$$= new AST_Node("LLAMADA","LLAMADA"); $$.addHijos(new AST_Node("ID_LLAMADA",$1,"ID_LLAMADA","LLAMADA",this._$.first_line,this._$.last_column));  }                                            
-    | ID parA L_EXP parC {$$= new AST_Node("LLAMADA","LLAMADA"); $$.addHijos(new AST_Node("ID_LLAMADA",$1,"ID_LLAMADA","LLAMADA",this._$.first_line,this._$.last_column),$3);  }                                                      
+    : ID parA parC {$$= new AST_Node("LLAMADA","LLAMADA"); $$.addHijos(new AST_Node("ID",$1,"ID","LLAMADA",this._$.first_line,this._$.last_column));  }                                            
+    | ID parA L_EXP parC {$$= new AST_Node("LLAMADA","LLAMADA"); $$.addHijos(new AST_Node("ID",$1,"ID","LLAMADA",this._$.first_line,this._$.last_column),$3);  }                                                      
     | Rrun ID parA parC    {$$= new AST_Node("RUN","RUN"); $$.addHijos(new AST_Node("ID_RUN",$1,"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column));  }                                                   
     | Rrun ID parA L_EXP parC {$$= new AST_Node("RUN","RUN"); $$.addHijos(new AST_Node("ID_RUN",$1,"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column),$4);  }                                                      
+    | error parc {TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para una llamada" ,this._$.first_line,this._$.first_column));}
 ;
 
 CASTEO
     : parA TIPO parC EXP  {$$= new AST_Node("CASTEO","CASTEO"); $$.addHijos(new AST_Node("TIPO",$2,$2,"CASTEO",this._$.first_line,this._$.last_column),$4);  }        
-    | parA error EXP   {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")");}
+    | parA error EXP   {console.log("Se recupero en ",yytext," (", this._$.last_line,", ", this._$.last_column,")"); TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un casteo" ,this._$.first_line,this._$.first_column));}
 ;
 ////////////////////////////////////////////////////////////////
 
 TIPO
     : Rint {tipo_variable = "int" ; $$=$1;}
-    | Rdouble {tipo_variable = "double" ; $$=$1;}
     | Rstring {tipo_variable = "string" ; $$=$1;}
     | Rchar {tipo_variable = "char" ; $$=$1}
     | Rboolean {tipo_variable = "boolean" ; $$=$1;}
+    | Rdouble {tipo_variable = "double" ; $$=$1}
     ;
 
 
@@ -341,6 +350,7 @@ EXP
     : EXP mas EXP  {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
     | EXP menos EXP {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
     | EXP mul EXP {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
+    | EXP pot EXP {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
     | EXP div EXP {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
     | EXP mod EXP {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
     | EXP min EXP {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
@@ -353,23 +363,23 @@ EXP
     | EXP or EXP {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$3);}
     | EXP opt EXP dosPun EXP {$$= new AST_Node("TERNARIO","TERNARIO");$$.addHijos($1,new AST_Node("opt",$2,"opt","opt",this._$.first_line,this._$.last_column),$3,$5);}                   
     | corA EXP corC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column));}
-    | EXP inc {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column));}
-    | EXP dec {$$= new AST_Node("EXP","EXP");$$.addHijos($1,new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column));}
+    | EXP inc {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$1);}
+    | EXP dec {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("op",$2,"op","op",this._$.first_line,this._$.last_column),$1);}
     | not EXP %prec unot {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("op",$1,"op","op",this._$.first_line,this._$.last_column) , $2);}
     | menos EXP %prec umenos {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("op",$1,"op","op",this._$.first_line,this._$.last_column) , $2);}  
     | Cadena {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("string",$1,"string","string",this._$.first_line,this._$.last_column));}
     | Char {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("char",$1,"char","char",this._$.first_line,this._$.last_column));}
     | ID {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("ID",$1,"ID","ID",this._$.first_line,this._$.last_column));}
-    | ID parA parC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("ID_LLAMADA",$1,"ID_LLAMADA","ID_LLAMADA",this._$.first_line,this._$.last_column));}
-    | ID parA LST_EXP parC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("ID_LLAMADA",$1,"ID_LLAMADA","ID_LLAMADA",this._$.first_line,this._$.last_column), $3);}
-    | ID corA EXP corC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("VECTOR1D",$1,"VECTOR1D","VECTOR1D",this._$.first_line,this._$.last_column), $3);}
-    | ID corA EXP corC corA EXP corC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("VECTOR1D",$1,"VECTOR1D","VECTOR1D",this._$.first_line,this._$.last_column), $3);} 
+    | ID parA parC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("ID",$1,"ID","ID",this._$.first_line,this._$.last_column));}
+    | ID parA LST_EXP parC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("ID",$1,"ID","ID",this._$.first_line,this._$.last_column), $3);}
+    | ID corA EXP corC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("ID",$1,"ID","ID",this._$.first_line,this._$.last_column), $3);}
+    | ID corA EXP corC corA EXP corC {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("ID",$1,"ID","ID",this._$.first_line,this._$.last_column),$3, $6);} 
     | entero {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("entero",$1,"entero","entero",this._$.first_line,this._$.last_column));} 
-    | decimal {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("double",$1,"double","double",this._$.first_line,this._$.last_column));} 
+    | decimal {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("numero",$1,"numero","numero",this._$.first_line,this._$.last_column));} 
     | lit_boleanV {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("true",$1,"true","true",this._$.first_line,this._$.last_column));} 
     | lit_boleanF {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("false",$1,"false","false",this._$.first_line,this._$.last_column));} 
     | parA EXP parC {$$= new AST_Node("EXP","EXP");$$.addHijos($2);} 
-    | parA TIPO parC %prec ucast {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("cast",$2,"cast","cast",this._$.first_line,this._$.last_column));} 
+    | parA TIPO parC EXP %prec ucast {$$= new AST_Node("EXP","EXP");$$.addHijos(new AST_Node("cast",$2,"cast","cast",this._$.first_line,this._$.last_column), $4);} 
     | RtoStr parA EXP parC %prec ucast {$$= new AST_Node("EXP","EXP");$1=new AST_Node("toStr",$1,"toStr","toStr",this._$.first_line,this._$.last_column);$1.addHijos($3) ;$$.addHijos($1);} 
     | RtoLower parA EXP parC %prec ucast {$$= new AST_Node("EXP","EXP");$1=new AST_Node("toLower",$1,"toLower","toLower",this._$.first_line,this._$.last_column);$1.addHijos($3) ;$$.addHijos($1);} 
     | RtoUpper parA EXP parC %prec ucast {$$= new AST_Node("EXP","EXP");$1=new AST_Node("toUpper",$1,"toUpper","toUpper",this._$.first_line,this._$.last_column);$1.addHijos($3) ;$$.addHijos($1);} 
@@ -381,8 +391,10 @@ EXP
 AUXVECTOR  //Valores AST name, value, tipo,entorno, fila, columna
     : AUXVECTOR coma corA LST_EXP corC {$1.addHijos($4) ; $$=$1}    
     | corA LST_EXP corC {$$= new AST_Node("AUXVECTOR","AUXVECTOR"); $$.addHijos($2);  }    
+    | error corC {TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para un vector" ,this._$.first_line,this._$.first_column));}
     ;
 LST_EXP 
     : LST_EXP coma EXP {$1.addHijos($3) ; $$=$1}    
-    | EXP {$$= new AST_Node("LST_EXP","LST_EXP"); $$.addHijos($1);  }    
+    | EXP {$$= new AST_Node("LST_EXP","LST_EXP","LST_EXP",this._$.first_line,this._$.first_column); $$.addHijos($1);  }    
+    | error coma {TablaErrores.getInstance().insertarError(new _Error("Sintactico","Error en: \" "+yytext+"\" sintaxis no valida para una lista de expresiones" ,this._$.first_line,this._$.first_column));}
     ;

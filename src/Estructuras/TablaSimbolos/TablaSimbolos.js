@@ -10,7 +10,7 @@ export var TablaSimbolos = (function(){
             this.simbolos.push(simbolos);
         }
 
-        reiniciarTabla(){
+        reiniciar(){
             this.simbolos = [];
         }
 
@@ -24,15 +24,26 @@ export var TablaSimbolos = (function(){
             return res;
         }
 
-        modificar(simbol_mod){
+        existe(nombre){
+            let res = false;
             this.simbolos.forEach(simbolo => {
                 if(simbolo.nombre == nombre){
-                    simbolo.valor = simbol_mod;
+                    res = true;
+                }
+            });
+            return res;
+
+        }
+
+        modificar(simbol_mod){
+            this.simbolos.forEach(simbolo => {
+                if(simbolo.nombre == simbol_mod.nombre){
+                    simbolo = simbol_mod;
                 }
             });
         }
 
-        getsimbolos(){
+        getSimbolos(){
             var texto="";
 
             texto+=`
@@ -61,7 +72,11 @@ export var TablaSimbolos = (function(){
                 texto+="<td>"+simbolo.nombre+"</td>\n";
                 texto+="<td>"+simbolo.tipo2+"</td>\n";
                 texto+="<td>"+simbolo.tipo+"</td>\n";
-                texto+="<td>"+simbolo.valor+"</td>\n";
+                if(typeof simbolo.valor === 'object'){
+                    texto+="<td>"+JSON.stringify(simbolo.valor)+"</td>\n";    
+                }else{
+                    texto+="<td>"+simbolo.valor+"</td>\n";    
+                }
                 texto+="<td>"+simbolo.entorno+"</td>\n";
                 texto+="<td>"+simbolo.linea+"</td>\n";
                 texto+="<td>"+simbolo.columna+"</td>\n";

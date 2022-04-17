@@ -1,4 +1,4 @@
-class Simbolo{
+export class Simbolo{
     constructor(nombre, tipo,tipo2, entorno,valor ,linea,columna){
         this.nombre = nombre;
         this.tipo = tipo;
