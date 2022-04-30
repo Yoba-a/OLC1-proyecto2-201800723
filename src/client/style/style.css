@@ -42,3 +42,13 @@ body {
     
     border-bottom: 1px solid #eaecee;
 }
+
+label {
+    cursor: pointer;
+}
+
+#custom-file-upload {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+ }

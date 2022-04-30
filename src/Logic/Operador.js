@@ -30,21 +30,81 @@ export class Operador{
                             return this.aritmetico(Resultado1,Resultado2,operacion,root.hijos[1].fila,root.hijos[1].columna);
                         case "==":
                         case "!=":
-                            return this.igualdad(Resultado1,Resultado2,root.hijos[1].fila,root.hijos[1].columna,operacion);
+                            return this.igualdad(Resultado1,Resultado2,operacion,root.hijos[1].fila,root.hijos[1].columna);
                         case ">":
                         case ">=":
                         case "<":
                         case "<=":
-                            return this.relacional(Resultado1,Resultado2,root.hijos[1].fila,root.hijos[1].columna,operacion);
+                            return this.relacional(Resultado1,Resultado2,operacion,root.hijos[1].fila,root.hijos[1].columna);
                         case "&&":
                         case "||":
-                            return this.logicos(Resultado1,Resultado2,root.hijos[1].fila,root.hijos[1].columna,operacion);
+                            return this.logicos(Resultado1,Resultado2,operacion,root.hijos[1].fila,root.hijos[1].columna);
                         default:
                             break;  
                     } 
-
                 }else if(root.hijos.length == 2){
-                    if(root.hijos[0].value=="!"){
+                    if(root.hijos[0].name == "cast" && root.hijos[1].name == "EXP"){
+                        Resultado= new ResOperacion();
+                        Resultado2 = this.ejecutar(root.hijos[1]);
+                        
+                        let tipo2 = root.hijos[0].value; 
+                        let tipo1 = Resultado2.tipo;
+                        if(this.verificarCasteo(tipo1 , tipo2)){
+                            switch(tipo1){
+                                case "int":
+                                    switch(tipo2){
+                                        case "double":
+                                            Resultado.tipo="double"
+                                            Resultado.valor=parseFloat(Resultado2.valor);
+                                            return Resultado            
+                                        case "string":
+                                            Resultado.tipo="string"
+                                            Resultado.valor=Resultado2.valor.toString();
+                                            return Resultado
+                                        case "char":
+                                            Resultado.tipo="char"
+                                            Resultado.valor= String.fromCharCode(Resultado2.valor);
+                                            return Resultado
+                                            
+                                        default:
+                                           break;
+                                    }
+                                case "double":
+                                    switch(tipo2){
+                                        case "int":
+                                            Resultado.tipo="int"
+                                            Resultado.valor=parseInt(Resultado2.valor);
+                                            return Resultado
+                                        case "string":
+                                            Resultado.tipo="string"
+                                            Resultado.valor=Resultado2.valor.toString();
+                                            return Resultado
+                                            break;
+                                    }
+                                case "char":
+                                    switch(tipo2){
+                                        case "int":
+                                            Resultado.tipo="int"
+                                            Resultado.valor=Resultado2.valor.charCodeAt(0);
+                                            return Resultado
+                                        case "double":
+                                            Resultado.tipo="int"
+                                            Resultado.valor=parseFloat(Resultado2.valor.charCodeAt(0));
+                                            return Resultado
+                                        default: 
+                                            Resultado.tipo="error"
+                                            Resultado.valor = "error"
+                                            break
+                                    }
+                            }
+                            break;
+                        }else{
+                            TablaErrores.getInstance().insertarError(new _Error("Semantico","No es posible operacion entre: "+tipo1 +' & '+tipo2 +" en una operacion de casteo",root.hijos[1].fila,root.hijos[1].columna)); 
+                            Resultado.tipo = "error";
+                            Resultado.valor = "error";
+                            return Resultado;
+                        }
+                    }else if(root.hijos[0].value=="!"){
                         Resultado1=this.ejecutar(root.hijos[1])
                         if(Resultado1.tipo=="boolean"){
                             Resultado= new ResOperacion();
@@ -291,7 +351,6 @@ export class Operador{
                     Resultado1 = this.ejecutar(hijo);
                     if(root.tipo == Resultado1.tipo){
                         arreglo.push(Resultado1.valor);
-                        
                     }else{
                         TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + root.tipo ,root.fila,root.columna));
                         break;
@@ -306,9 +365,122 @@ export class Operador{
                     return Resultado;
                 }
                 break;
+            case "EXPVECTOR":
+                if(root.hijos[0].name == "ID" && root.hijos[1].name == "EXP" && root.hijos[2].name == "EXP"){
+                    Resultado= new ResOperacion();
+                    Resultado1 = this.ejecutar(root.hijos[0]);
+                    Resultado2 = this.ejecutar(root.hijos[1]);
+                    let Resultado3 = this.ejecutar(root.hijos[2]);
+                    if(typeof Resultado1.valor === "object" ){
+                        if(Resultado2.tipo =="int" && Resultado3.tipo =="int"){
+                            if(Resultado2.valor < Resultado1.valor.sizex && Resultado3.valor < Resultado1.valor.sizey){
+                                    Resultado.tipo = Resultado1.tipo;
+                                    Resultado.valor = Resultado1.valor.array[Resultado2.valor][Resultado3.valor];
+                                    return Resultado;
+                            }else{
+                                TablaErrores.getInstance().insertarError(new _Error("Semantico","No es posible operacion, fuera de los limites del arreglo, tamaño definido:  " + Resultado1.valor.size  ,root.hijos[0].fila,root.hijos[0].columna)); 
+                                Resultado.tipo = "error";
+                                Resultado.valor = "error";
+                                return Resultado;
+                            }
+                        }else{
+                            TablaErrores.getInstance().insertarError(new _Error("Semantico","No es posible operacion, para iterar un arreglo es necesario un entero  " ,root.hijos[1].fila,root.hijos[1].columna)); 
+                            Resultado.tipo = "error";
+                            Resultado.valor = "error";
+                            return Resultado;
+                        }
+                    }else{
+                        TablaErrores.getInstance().insertarError(new _Error("Semantico","No es posible operacion, no puedes iterar la variable "+root.hijos[0].value +" dado que no es un arreglo"  ,root.hijos[0].fila,root.hijos[0].columna)); 
+                        Resultado.tipo = "error";
+                        Resultado.valor = "error";
+                        return Resultado;
+                    }
+                }
+                break;
+            case "TERNARIO": 
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                Resultado2 = this.ejecutar(root.hijos[2]);
+                let Resultado3 = this.ejecutar(root.hijos[3]);
+                if(Resultado1.tipo == "boolean"){
+                    Resultado.valor = Resultado1.valor ? Resultado2.valor : Resultado3.valor;
+                    Resultado.tipo = Resultado1.valor ? Resultado2.tipo : Resultado3.tipo;
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + boolean ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;
             default:
+               
                 break;
             
+        }
+    }
+
+    logicos(R1,R2,op,fila,columna){
+        let tipo1 = R1.tipo;
+        let tipo2 = R2.tipo;
+        var res = new ResOperacion();
+        if(tipo1 == "error" || tipo2 == "error"){
+            res.tipo = "error";
+            return res;
+        }
+        
+        if(tipo1 == "boolean" && tipo2 == "boolean"){
+            res.tipo = "boolean";
+            switch(op){
+                case "&&":
+                    res.valor =R1.valor&&R2.valor;
+                    return res;
+                case "||":
+                    res.valor =R1.valor||R2.valor;
+                    return res;
+            }
+        }else{
+            TablaErrores.getInstance().insertarError(new _Error("Semantico","No es posible operacion entre: "+tipo1 +' & '+tipo2 +" en una operacion logica",fila,columna)); 
+            res.tipo = "error";
+            res.valor = "error";
+            return res;
+        }
+    }
+
+    verificarigualdad(tipo1,tipo2){
+        switch(tipo1){
+            case "int":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default:
+                        return false;
+                }
+            case "double":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default: return false;
+
+                }
+            case "char":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default: return false;
+                }
+            case "boolean":
+                switch(tipo2){
+                    case "boolean":
+                        return true;
+                    default: return false;
+                }
         }
     }
    
@@ -324,7 +496,6 @@ export class Operador{
             res.valor = "objeto";
             return res;
         }
-
         switch (operacion) {
             case "+":
                 switch (tipo1.toLowerCase()) {
@@ -757,6 +928,197 @@ export class Operador{
         }
 
     }
+
+    verificarigualdad(tipo1,tipo2){
+        switch(tipo1){
+            case "int":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default:
+                        return false;
+                }
+            case "double":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default: return false;
+
+                }
+            case "char":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default: return false;
+                }
+            case "boolean":
+                switch(tipo2){
+                    case "boolean":
+                        return true;
+                    default: return false;
+                }
+            case "string":
+                switch(tipo2){
+                    case "string":
+                        return true;
+                    default: return false;
+                }
+        }
+    }
+
+    igualdad(R1,R2,op , fila, columna) {
+        let tipo1 = R1.tipo;
+        let tipo2 = R2.tipo;
+        var res = new ResOperacion();
+        if(tipo1=="error"||tipo2=="error"){
+            res.tipo="error";
+            return res;
+        }
+
+        if(this.verificarigualdad(tipo1,tipo2)){
+            if(tipo1==="char" &&  tipo2==="int" && R1.valor.length >1  ){
+                R1.valor =  typeof R1.valor ==="string" ? R1.valor.charCodeAt(0) : R1.valor;
+                R2.valor =  typeof R2.valor ==="string" ? R2.valor.charCodeAt(0) : R2.valor;
+                console.log(R1,R2);
+            }else if (tipo2==="char" &&  tipo1==="int" && R2.valor.length >1  ){
+                R1.valor =  typeof R1.valor ==="string" ? R1.valor.charCodeAt(0) : R1.valor;
+                R2.valor =  typeof R2.valor ==="string" ? R2.valor.charCodeAt(0) : R2.valor;
+                console.log(R1,R2);
+            }
+            switch(op){
+                case "==":
+                    res.tipo="boolean";
+                    res.valor=R1.valor==R2.valor
+                    return res;
+                case "!=":
+                    res.tipo="boolean";
+                    res.valor=R1.valor!=R2.valor;
+                    return res;
+            }
+        }else{
+            TablaErrores.getInstance().insertarError(new _Error("Semantico","No es posible operacion entre: "+tipo1 +' & '+tipo2 +" en una operacion logica",fila,columna)); 
+            res.tipo = "error";
+            res.valor = "error";
+            return res;
+        }
+    }
+
+    verificarrelacional(tipo1,tipo2){
+        switch(tipo1){
+            case "int":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default:
+                        return false;
+                }
+            case "double":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default: return false;
+
+                }
+            case "char":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                    case "char":
+                        return true;
+                    default: return false;
+                }
+
+        }
+    }
+
+
+
+    relacional(R1,R2,op,fila,columna){
+        let tipo1 = R1.tipo;
+        let tipo2 = R2.tipo;
+        var res = new ResOperacion();
+        if(tipo1=="error"||tipo2=="error"){
+            res.tipo="error";
+            return res;
+        }
+        if(this.verificarrelacional(tipo1,tipo2)){
+            if(tipo1==="char" &&  tipo2==="int" && R1.valor.length >1  ){
+                R1.valor =  typeof R1.valor ==="string" ? R1.valor.charCodeAt(0) : R1.valor;
+                R2.valor =  typeof R2.valor ==="string" ? R2.valor.charCodeAt(0) : R2.valor;
+                console.log(R1,R2);
+            }else if (tipo2==="char" &&  tipo1==="int" && R2.valor.length >1  ){
+                R1.valor =  typeof R1.valor ==="string" ? R1.valor.charCodeAt(0) : R1.valor;
+                R2.valor =  typeof R2.valor ==="string" ? R2.valor.charCodeAt(0) : R2.valor;
+                console.log(R1,R2);
+            }
+            switch(op){
+                case ">":
+                    res.tipo="boolean";
+                    res.valor=R1.valor>R2.valor;
+                    return res;
+                case "<":
+                    res.tipo="boolean";
+                    res.valor=R1.valor<R2.valor;
+                    return res;
+                case ">=":
+                    res.tipo="boolean";
+                    res.valor=R1.valor>=R2.valor;
+                    return res;
+                case "<=":
+                    res.tipo="boolean";
+                    res.valor=R1.valor<=R2.valor;
+                    return res;
+            }
+        }else{
+            TablaErrores.getInstance().insertarError(new _Error("Semantico","No es posible operacion entre: "+tipo1 +' & '+tipo2 +" en una operacion logica",fila,columna)); 
+            res.tipo = "error";
+            res.valor = "error";
+            return res;
+
+        }
+
+    }
+
+
+    verificarCasteo(tipo1,tipo2){
+        switch(tipo1){
+            case "int":
+                switch(tipo2){
+                    case "double":
+                    case "string":
+                    case "char":
+                        return true;
+                    default:
+                        return false;
+                }
+            case "double":
+                switch(tipo2){
+                    case "int":
+                    case "string":
+                        return true;
+                    default: return false;
+                }
+            case "char":
+                switch(tipo2){
+                    case "int":
+                    case "double":
+                        return true;
+                    default: return false;
+                }
+       }
+    }
+
+
 
 }
         

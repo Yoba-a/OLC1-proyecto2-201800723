@@ -32,7 +32,6 @@ export var TablaSimbolos = (function(){
                 }
             });
             return res;
-
         }
 
         modificar(simbol_mod){
@@ -77,7 +76,7 @@ export var TablaSimbolos = (function(){
                 }else{
                     texto+="<td>"+simbolo.valor+"</td>\n";    
                 }
-                texto+="<td>"+simbolo.entorno+"</td>\n";
+                texto+="<td>"+ simbolo.entorno+"</td>\n";
                 texto+="<td>"+simbolo.linea+"</td>\n";
                 texto+="<td>"+simbolo.columna+"</td>\n";
                 texto+="</tr>";

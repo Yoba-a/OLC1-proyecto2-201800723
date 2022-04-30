@@ -7,6 +7,8 @@ const app = express();
 const path = require('path');
 const {TablaErrores} = require('./Estructuras/ManejoErrores/TablaErrores.js') ;
 const {TablaSimbolos} = require('./Estructuras/TablaSimbolos/TablaSimbolos.js');
+import {Entorno} from "./Estructuras/Entornos/Entorno";
+import {Clasificacion} from "./Estructuras/Entornos/Entorno";
 var bodyParser = require('body-parser')
 const parser = require('./gramatica'); 
 nunjucks.configure(__dirname+'/client', {
@@ -58,6 +60,7 @@ function imprimir(raiz){
       contador++;
       recorrido(nombrehijo,nodito);
     })
+    
 
   }
 
@@ -88,12 +91,12 @@ app.post('/prueba', urlencodedParser, (req, res) => {
     const resultado =  parser.parse(codevalue);  
     var int  =  new Interprete();
     const dot = imprimir(resultado);
-    var code = "";
-    //var code = int.analizar(resultado);
+    //var code = "";
+    var code = int.analizar(resultado);
     console.log("codigo",code);
+    
     var errores = TablaErrores.getInstance().getErrores();
     var simbolos = TablaSimbolos.getInstance().getSimbolos();
-    
     res.status(200).json({exito: "exito", htmlErrores: errores ,dot: dot, code: code, simbolos:simbolos});
   } catch (error) {
     console.error(error);

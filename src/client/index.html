@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>
+<link>
     <meta name="msapplication-TileColor" content="#ffffff">
 <meta name="theme-color" content="#ffffff">
 
@@ -22,6 +22,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>React Project Starter</title>
 <meta name="description" content="">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
@@ -31,6 +32,32 @@
   
         {% endblock content %}
     </main>
+    <script type="text/javascript">
+
+function readSingleFile(e) {
+  var file = e.target.files[0];
+  if (!file) {
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var contents = e.target.result;
+    displayContents(contents);
+  };
+  reader.readAsText(file);
+}
+
+
+
+    function displayContents(contents) {
+    jsEditor.setValue(contents);
+    }
+
+    document.getElementById('btn_abrir')
+    .addEventListener('change', readSingleFile, false);
+
+
+    </script>
 
   
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

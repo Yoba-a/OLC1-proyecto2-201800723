@@ -29,6 +29,12 @@
   .datepicker-dropdown.datepicker-orient-top {
     padding-top: 0;
     padding-bottom: 4px; }
+    label {
+   cursor: pointer;
+   /* Style as you please, it will become the visible UI component. */
+}
+
+
 
 .datepicker-picker {
   display: inline-block;

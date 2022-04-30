@@ -2,6 +2,8 @@ var dot = ""
 var tblErrores = ""
 var tblSimbolos = ""
 
+
+
 const jsEditor = CodeMirror(document.querySelector(".editor .code .js-code"), {
   styleActiveLine: true,
   lineNumbers: true,
@@ -108,4 +110,26 @@ $("#run-btn").on("click", function () {
     })
   }
   
+});
+
+
+function download(text, name, type) {
+  var a = document.createElement('a');
+ 
+  var file = new Blob([text], {type: type});
+  a.href = URL.createObjectURL(file);
+  a.download = name;
+  a.click();
+  a.remove();
+
+}
+
+$("#crear_archivo").on("click", function () {
+  const code = jsEditor.getValue();
+  download(code , "codigo.cst", 'text/plain')
+});
+
+$("#guardar_archivo").on("click", function () {
+  const code = jsEditor.getValue();
+  download(code , "codigo.cst", 'text/plain')
 });

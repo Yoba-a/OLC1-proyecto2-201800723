@@ -79,16 +79,21 @@
             <ul class="flex-column nav">
               <li class="nav-item ">
                 <a class="nav-link" >
-                    <span>
-                        <span class="sidebar-icon"><span class="fa-regular fa-file-lines"></span></span>
-                        <span class="sidebar-text">Abrir Archivo</span>
-                  </span> 
                   
+                      <span>
+                          <span class="sidebar-icon"><span class="fa-regular fa-file-lines"></span></span>
+                      <span class="sidebar-text" >
+                        <label for="fileOpen">Abrir Archivo</label>
+                          <input  id="fileOpen" type="file" >
+                        </input>
+                      </span>
+                    </span> 
+
                 </a>
               </li>
               <ul class="flex-column nav">
                 <li class="nav-item ">
-                  <a class="nav-link" >
+                  <a class="nav-link" id = "crear_archivo" >
                     <span>
                         <span class="sidebar-icon"><span class="fa-regular fa-file-code"></span></span>
                         <span class="sidebar-text">Crear Archivo</span>
@@ -96,7 +101,7 @@
                   </a>
                 </li>
               <li class="nav-item ">
-                <a class="nav-link" >
+                <a class="nav-link" id ="guardar_archivo" >
                     <span>
                         <span class="sidebar-icon"><span class="fa-regular fa-floppy-disk"></span></span>
                         <span class="sidebar-text">Guardar Archivo</span>
