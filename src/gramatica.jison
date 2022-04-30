@@ -210,6 +210,8 @@ DECLARACION_INDV  // esta funciona para hacer una declaracion simple
     | TIPO ID {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column))}
     | TIPO ID corA corC  igual Rnew TIPO corA EXP corC {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV");$6 = new AST_Node("NEW","NEW",$7,"NEW",this._$.first_line,this._$.first_column) ;
       $6.addHijos($9);$$.addHijos(new AST_Node("ID",$2,$1,"VECTOR",this._$.first_line,this._$.first_column),new AST_Node("VECTOR1D","VECTOR1D"),$6)}
+    | TIPO ID corA corC igual CHARTOARRAY {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV");$5 = new AST_Node("TOARRAY","TOARRAY",$1,"NEW",this._$.first_line,this._$.first_column) ;
+      $5.addHijos($6);$$.addHijos(new AST_Node("ID",$2,$1,"VECTOR",this._$.first_line,this._$.first_column),new AST_Node("VECTOR1D","VECTOR1D"),$5)}
     | TIPO ID corA corC  igual  corA LST_EXP corC
       {$$= new AST_Node("DECLARACION_INDV","DECLARACION_INDV"); $7.tipo = tipo_variable;$$.addHijos(new AST_Node("ID",$2,tipo_variable,"VARIABLE",this._$.first_line,this._$.first_column),new AST_Node("VECTOR1D","VECTOR1D"),$7)}
     | TIPO ID corA corC corA corC igual Rnew TIPO corA EXP corC corA EXP corC
@@ -227,6 +229,9 @@ LST_IDS //esta funciona para devolver ,id,id ,id para declarar variables Valores
    
     ;
 //falta en el semantico
+CHARTOARRAY
+    : RtoCharArray parA EXP parC {$$= new AST_Node("EXP","EXP");$1=new AST_Node("charToArray",$1,"charToArray","charToArray",this._$.first_line,this._$.last_column);$1.addHijos($3) ;$$.addHijos($1);} 
+    ;
 METODOS
     : ID parA parC dosPun TIPO BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,tipo_variable,"",this._$.first_line,this._$.last_column), $5,$6);}            
     | ID parA parC dosPun Rvoid BODY {$$= new AST_Node("METODOS","METODOS"); $$.addHijos(new AST_Node("ID",$1,"void","",this._$.first_line,this._$.last_column), $5,$6);}            

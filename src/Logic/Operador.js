@@ -407,12 +407,118 @@ export class Operador{
                     Resultado.tipo = Resultado1.valor ? Resultado2.tipo : Resultado3.tipo;
                     return Resultado;
                 }else{
-                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + boolean ,root.hijos[0].fila,root.hijos[0].columna));
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "boolean" ,root.hijos[0].fila,root.hijos[0].columna));
                     Resultado.tipo = "error";
                     Resultado.valor = "error";
                     return Resultado;
                 }
                 break;
+            case "toStr":
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                if(Resultado1.tipo != "error"){
+                    Resultado.valor = Resultado1.valor.toString();
+                    Resultado.tipo = "string"
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "string" ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;
+            case "toLower":
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                if(Resultado1.tipo == "string"){
+                    Resultado.valor = Resultado1.valor.toLowerCase();
+                    Resultado.tipo = "string"
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "string" ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;
+            case "toUpper":
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                if(Resultado1.tipo == "string"){
+                    Resultado.valor = Resultado1.valor.toUpperCase();
+                    Resultado.tipo = "string"
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "string" ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;
+            case "typeof":
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                if(Resultado1.tipo != "error"){
+                    Resultado.valor = Resultado1.tipo;
+                    Resultado.tipo = "string"
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "any type" ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;
+            case "leng":
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                console.log(Resultado1)
+                if (typeof Resultado1.valor == "object" ){
+                    Resultado.valor = Resultado1.valor.size;
+                    Resultado.tipo = "int"
+                    return Resultado;
+                }else if(Resultado1.tipo == "string" ){
+                    Resultado.valor = Resultado1.valor.length;
+                    Resultado.tipo = "int"
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "string o array" ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;
+            case "round":
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                if(Resultado1.tipo == "int" || Resultado1.tipo == "double"){
+                    Resultado.valor = Math.round(Resultado1.valor);
+                    Resultado.tipo = "int"
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "int o double" ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;
+            case "charToArray":
+                Resultado= new ResOperacion();
+                Resultado1 = this.ejecutar(root.hijos[0]);
+                if(Resultado1.tipo == "string" ){
+                    Resultado.valor = {
+                        size : Resultado1.valor.length, 
+                        array : Resultado1.valor.split("")
+                    }
+                    Resultado.tipo = "char"
+                    return Resultado;
+                }else{
+                    TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+Resultado1.tipo +" y se requiere: " + "string" ,root.hijos[0].fila,root.hijos[0].columna));
+                    Resultado.tipo = "error";
+                    Resultado.valor = "error";
+                    return Resultado;
+                }
+                break;    
             default:
                
                 break;

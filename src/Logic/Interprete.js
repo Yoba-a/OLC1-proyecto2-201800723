@@ -101,6 +101,24 @@ export class Interprete{
                                         TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+root.hijos[2].tipo +" y se requiere: " + root.hijos[0].tipo ,root.hijos[2].fila,root.hijos[2].columna));
                                         break;
                                     }
+                                case "TOARRAY":
+                                    if(root.hijos[0].tipo == root.hijos[2].tipo ){
+                                        op = new Operador();
+                                        result = op.ejecutar(root.hijos[2].hijos[0]);
+                                            simbolo = new Simbolo(root.hijos[0].value, //nombre
+                                            root.hijos[0].tipo, // tipo
+                                            "vector 1d", // clasificacion
+                                            Entorno.getInstance().entorno(), // entorno
+                                            result.valor, // valor 
+                                            root.hijos[0].fila, 
+                                            root.hijos[0].columna);
+                                            TablaSimbolos.getInstance().insertarSimbolo(simbolo);
+                                            console.log(simbolo.valor);
+                                            break;                 
+                                    }else{
+                                        TablaErrores.getInstance().insertarError(new _Error("Semantico","Error en: \" "+root.hijos[0].value+"\" tipos no compatibles ingreso: "+root.hijos[2].tipo +" y se requiere: " + "char" ,root.hijos[2].fila,root.hijos[2].columna));
+                                        break;
+                                    }
                             }
                             break;
                         }else if (root.hijos[1].value === "VECTOR2D"){

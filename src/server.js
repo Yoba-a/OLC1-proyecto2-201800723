@@ -60,7 +60,7 @@ function imprimir(raiz){
       contador++;
       recorrido(nombrehijo,nodito);
     })
-    
+
 
   }
 
