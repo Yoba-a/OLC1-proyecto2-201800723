@@ -47,7 +47,7 @@ label {
     cursor: pointer;
 }
 
-#custom-file-upload {
+#fileOpen {
     opacity: 0;
     position: absolute;
     z-index: -1;
