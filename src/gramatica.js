@@ -266,10 +266,10 @@ case 69:
 this.$= new AST_Node("LLAMADA","LLAMADA"); this.$.addHijos(new AST_Node("ID",$$[$0-3],"ID","LLAMADA",this._$.first_line,this._$.last_column),$$[$0-1]);  
 break;
 case 70:
-this.$= new AST_Node("RUN","RUN"); this.$.addHijos(new AST_Node("ID_RUN",$$[$0-3],"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column));  
+this.$= new AST_Node("RUN","RUN"); this.$.addHijos(new AST_Node("ID_RUN",$$[$0-2],"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column));  
 break;
 case 71:
-this.$= new AST_Node("RUN","RUN"); this.$.addHijos(new AST_Node("ID_RUN",$$[$0-4],"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column),$$[$0-1]);  
+this.$= new AST_Node("RUN","RUN"); this.$.addHijos(new AST_Node("ID_RUN",$$[$0-3],"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column),$$[$0-1]);  
 break;
 case 72:
 this.$= new AST_Node("EXP","EXP");this.$.addHijos(new AST_Node("cast",$$[$0-2],$$[$0-2],"cast",this._$.first_line,this._$.last_column), $$[$0]);

@@ -1,4 +1,6 @@
 const {TablaSimbolos} = require('../Estructuras/TablaSimbolos/TablaSimbolos') ;
+const {TablaMetodos} = require('../Estructuras/metodos/Metodos') ;
+const {Metodo} = require('../Estructuras/metodos/Metodo') ;
 const {TablaErrores} = require('../Estructuras/ManejoErrores/TablaErrores.js');
 const {_Error} = require('../Estructuras/ManejoErrores/_Error');
 const {Simbolo} = require('../Estructuras/TablaSimbolos/Simbolo');
@@ -600,6 +602,34 @@ export class Interprete{
                 }
                 Entorno.getInstance().global();
                 break;
+            case "METODOS": 
+                if (root.hijos.length == 3){
+                    console.log(root.hijos)
+                        if(root.hijos[0].tipo == "void"){
+                            var metodo = new Metodo(root.hijos[0].value,root.hijos[0].tipo,root.hijos[2])
+                            TablaMetodos.getInstance().insertarMetodo(metodo)     
+                            console.log("metodo reconocido")
+                            break
+                        }               
+                }
+                break;
+            case "LLAMADA": 
+                if (root.hijos.length == 1){
+                    var metodo =  TablaMetodos.getInstance().getMetodo(root.hijos[0].value)
+                    console.log(metodo)
+                    metodo.body.hijos.forEach(hijo => code+= this.interpretar(hijo)); 
+                    return code;
+                }
+                break;
+            case "RUN": 
+                if (root.hijos.length == 1){
+                    var metodo =  TablaMetodos.getInstance().getMetodo(root.hijos[0].value)
+                    console.log(metodo)
+                    metodo.body.hijos.forEach(hijo => code+= this.interpretar(hijo)); 
+                    return code;
+                } 
+                break
+            
         }
         return code;
     }

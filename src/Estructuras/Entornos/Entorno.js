@@ -4,6 +4,7 @@ export var Entorno = (function(){
     class Entorno {
         constructor(){
             this.Entorno = "global"
+            
         }
 
         entorno(){
@@ -40,6 +41,9 @@ export var Entorno = (function(){
 
         vo_entorno(){
             this.Entorno = "vo";
+        }
+        metod(name){
+            this.Entorno = name;
         }
     }
 

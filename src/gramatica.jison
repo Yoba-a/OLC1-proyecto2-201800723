@@ -308,8 +308,8 @@ ACTUALIZAR                                                      //Valores AST na
 LLAMADA //Valores AST name, value, tipo,entorno, fila, columna
     : ID parA parC {$$= new AST_Node("LLAMADA","LLAMADA"); $$.addHijos(new AST_Node("ID",$1,"ID","LLAMADA",this._$.first_line,this._$.last_column));  }                                            
     | ID parA L_EXP parC {$$= new AST_Node("LLAMADA","LLAMADA"); $$.addHijos(new AST_Node("ID",$1,"ID","LLAMADA",this._$.first_line,this._$.last_column),$3);  }                                                      
-    | Rrun ID parA parC    {$$= new AST_Node("RUN","RUN"); $$.addHijos(new AST_Node("ID_RUN",$1,"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column));  }                                                   
-    | Rrun ID parA L_EXP parC {$$= new AST_Node("RUN","RUN"); $$.addHijos(new AST_Node("ID_RUN",$1,"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column),$4);  }                                                      
+    | Rrun ID parA parC    {$$= new AST_Node("RUN","RUN"); $$.addHijos(new AST_Node("ID_RUN",$2,"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column));  }                                                   
+    | Rrun ID parA L_EXP parC {$$= new AST_Node("RUN","RUN"); $$.addHijos(new AST_Node("ID_RUN",$2,"ID_RUN","LLAMADA",this._$.first_line,this._$.last_column),$4);  }                                                      
     ;
 //falta en el semantico    
 CASTEO

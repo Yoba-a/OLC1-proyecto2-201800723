@@ -5,10 +5,12 @@ const nunjucks = require('nunjucks');
 // initializing packages
 const app = express();
 const path = require('path');
+const {TablaMetodos} = require('./Estructuras/metodos/Metodos.js') ;
 const {TablaErrores} = require('./Estructuras/ManejoErrores/TablaErrores.js') ;
 const {TablaSimbolos} = require('./Estructuras/TablaSimbolos/TablaSimbolos.js');
 import {Entorno} from "./Estructuras/Entornos/Entorno";
 import {Clasificacion} from "./Estructuras/Entornos/Entorno";
+
 var bodyParser = require('body-parser')
 const parser = require('./gramatica'); 
 nunjucks.configure(__dirname+'/client', {
@@ -84,6 +86,7 @@ app.get('/api', (req, res) => {
 app.post('/prueba', urlencodedParser, (req, res) => {
   TablaErrores.getInstance().reiniciar();
   TablaSimbolos.getInstance().reiniciar();
+  TablaMetodos.getInstance().reiniciar();
   console.log('prueba de post')
   console.log(req.body.code);
   const codevalue = req.body.code;
@@ -91,8 +94,8 @@ app.post('/prueba', urlencodedParser, (req, res) => {
     const resultado =  parser.parse(codevalue);  
     var int  =  new Interprete();
     const dot = imprimir(resultado);
-    //var code = "";
-    var code = int.analizar(resultado);
+    var code = "";
+    //var code = int.analizar(resultado);
     console.log("codigo",code);
     
     var errores = TablaErrores.getInstance().getErrores();
