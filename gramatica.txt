@@ -1,219 +1,205 @@
 INIT 
-    : LINS EOF;
-
-
+    : LINS EOF  
+    
+//Valores AST name, value, tipo,entorno, fila, columna
 LINS
     : LINS INSTRUCC 
-    | INSTRUCC 
+    | INSTRUCC  
     ;
 
 INSTRUCC
     : Rprintln parA EXP parC pcoma 
-    | Rprint parA EXP parC pcoma
+    | Rprint parA EXP parC pcoma 
     | DECLARAR pcoma 
-    | ASIGNAR pcoma 
-    | IF
-    | DOWHILE pcoma
-    | WHILE
+    | ASIGNAR pcoma  
+    | IF  
+    | DOWHILE pcoma 
+    | WHILE 
     | FOR 
-    | SWITCH
-    | Rbreak pcoma
-    | Rcontinue pcoma
-    | METODOS
-    | LLAMADA pcoma
-    | RUNMETOD
-    | RETORNAR
-    | error INS 
+    | SWITCH 
+    | Rbreak pcoma 
+    | Rcontinue pcoma 
+    | METODOS 
+    | LLAMADA pcoma 
+    | RUNMETOD 
+    | RETORNAR 
+    | error  
+    
+    ;
+//falta en el semantico    
+RETORNAR //Valores AST name, value, tipo,entorno, fila, columna
+    : Rreturn EXP pcoma 
+    | Rreturn pcoma 
     ;
 
-RETORNAR
-    : Rreturn EXP pcoma
-    | Rreturn pcoma
+DECLARAR // aqui inician las declaraciones de variables Valores AST name, value, tipo,entorno, fila, columna
+    :  LST_IDS  
+    | DECLARACION_INDV 
     ;
-
-
-DECLARAR // aqui inician las declaraciones de variables
-    : DECLARACION_INDV LST_IDS 
-    | DECLARACION_INDV
-    ;
-
 
 DECLARACION_INDV  // esta funciona para hacer una declaracion simple
-    : TIPO ID igual EXP
-    | TIPO ID igual CASTEO
-    | TIPO ID
-    | TIPO ID corA corC  igual Rnew TIPO corA EXP corC
+    : TIPO ID igual EXP 
+    | TIPO ID 
+    | TIPO ID corA corC  igual Rnew TIPO corA EXP corC 
+    | TIPO ID corA corC igual CHARTOARRAY 
     | TIPO ID corA corC  igual  corA LST_EXP corC
     | TIPO ID corA corC corA corC igual Rnew TIPO corA EXP corC corA EXP corC
     | TIPO ID corA corC corA corC igual  corA AUXVECTOR corC 
-    | TIPO error pcoma 
+      
     ;
-LST_IDS //esta funciona para devolver ,id,id ,id para declarar variables
-    : LST_IDS coma ID
-    | LST_IDS coma ID igual EXP
-    | coma ID
+//falta en el semantico
+LST_IDS //esta funciona para devolver ,id,id ,id para declarar variables Valores AST name, value, tipo,entorno, fila, columna
+    : LST_IDS coma ID 
+    | LST_IDS coma ID igual EXP 
+    | TIPO ID coma ID 
+    | TIPO ID coma ID igual EXP 
+   
     ;
-
+//falta en el semantico
+CHARTOARRAY
+    : RtoCharArray parA EXP parC 
+    ;
 METODOS
-    : ID parA parC dosPun TIPO BODY
-    | ID parA parC dosPun Rvoid BODY
-    | ID parA parC dosPun BODY
-    | ID parA PARAMETROS parC dosPun TIPO BODY
-    | ID parA PARAMETROS parC dosPun Rvoid  BODY
-    | ID parA PARAMETROS parC dosPun BODY
-    | ID parA error dosPun TIPO BODY  
+    : ID parA parC dosPun TIPO BODY 
+    | ID parA parC dosPun Rvoid BODY 
+    | ID parA parC  BODY 
+    | ID parA PARAMETROS parC dosPun TIPO BODY 
+    | ID parA PARAMETROS parC dosPun Rvoid  BODY 
+    | ID parA PARAMETROS parC  BODY 
+   
     ;
+//falta en el semantico
 PARAMETROS
-    : PARAMETROS coma TIPO ID
-    | TIPO ID
+    : PARAMETROS coma TIPO ID 
+    | TIPO ID 
+   
     ;
 
-ASIGNAR
-    : ID igual EXP
-    | ID igual CASTEO
-    | ID INCorDEC
-    | ID corA EXP corC igual EXP
-    | ID corA EXP corC  corA EXP corC igual corA EXP corC  corA EXP corC
-    | ID error pcoma
-        
+ASIGNAR //Valores AST name, value, tipo,entorno, fila, columna
+    : ID igual EXP 
+    | ID INCorDEC 
+    | ID corA EXP corC igual EXP 
+    | ID corA EXP corC  corA EXP corC igual  EXP 
     ;
-
-
 
 INCorDEC
-    : inc
-    | dec
+    : inc 
+    | dec 
     ;
+//falta en el semantico    
 IF
-    : Rif parA EXP parC BODY              
+    : Rif parA EXP parC BODY 
     | Rif parA EXP parC BODY Relse BODY 
-    | Rif parA EXP parC BODY Relse IF
-    | Rif error llavA
-       
+    | Rif parA EXP parC BODY Relse IF 
     ;
-///////////////////    
+//falta en el semantico    
 SWITCH
     : Rswitch parA EXP parC llavA LCASOS Rdefault dosPun LINS llavC  
-    | Rswitch parA EXP parC llavA LCASOS llavC                        
-    | Rswitch error llavC  
-        
+    | Rswitch parA EXP parC llavA LCASOS llavC  
+    | Rswitch parA EXP parC llavA Rdefault dosPun LINS llavC 
     ;
-
+//falta en el semantico    
 ELSEIF
-    : Rif parA EXP parC BODY        
+    : Rif parA EXP parC BODY 
     | ELSEIF Relse Rif parA EXP parC BODY 
-    | Rif error parC
-;
-
+    ;
+//falta en el semantico    
 LCASOS
-    :Rcase EXP dosPun LINS               
-    |LCASOS Rcase EXP dosPun LINS        
-    |Rcase error parC                 
-;
-
+    :Rcase EXP dosPun LINS 
+    |LCASOS Rcase EXP dosPun LINS  
+    ;
+//falta en el semantico    
 DOWHILE
-    :Rdo BODY Rwhile parA EXP parC   
-    |Rdo error pcoma                       
-;
-
+    :Rdo BODY Rwhile parA EXP parC 
+    ;
+//falta en el semantico    
 WHILE
-    :Rwhile parA EXP parC BODY        
-    |Rwhile error parC                   
-;
+    :Rwhile parA EXP parC BODY   
+    ;
+//falta en el semantico    
 FOR
-    :Rfor parA ASIGNAR pcoma EXP pcoma ACTUALIZAR parC BODY         
-    |Rfor parA DECLARAR pcoma EXP pcoma ACTUALIZAR parC BODY        
-    |Rfor error llavC                                                   
-;
-
-
+    :Rfor parA ASIGNAR pcoma EXP pcoma ASIGNAR parC BODY   
+    |Rfor parA DECLARAR pcoma EXP pcoma ASIGNAR parC BODY  
+    ;
+//falta en el semantico    
 BODY
-    : llavA LINS llavC   
-    | llavA llavC         
-    | llavC error llavC  
-;
-
-
-ACTUALIZAR
-    : ID igual EXP         
-    | ID INCorDEC             
-    | ID error             
-;
-
-LLAMADA 
-    : ID parA parC                 
-    | ID parA L_EXP parC          
-    | Rrun ID parA parC           
-    | Rrun ID parA L_EXP parC     
-;
-
+    : llavA LINS llavC  
+    | llavA llavC    
+    ;
+//falta en el semantico    
+ACTUALIZAR                                                      //Valores AST name, value, tipo,entorno, fila, columna
+    : ID igual EXP 
+    | ID INCorDEC 
+    ;
+//falta en el semantico    
+LLAMADA //Valores AST name, value, tipo,entorno, fila, columna
+    : ID parA parC 
+    | ID parA L_EXP parC 
+    | Rrun ID parA parC   
+    | Rrun ID parA L_EXP parC 
+    ;
+//falta en el semantico    
 CASTEO
-    : parA TIPO_AUX parC EXP       
-    | parA error EXP             
-;
-////////////////////////////////////////////////////////////////
+    : parA TIPO parC EXP  
+    | parA TIPO parC ID  
+    ;
 
 TIPO
-    : Rint
-    | Rdouble
-    | Rstring
-    | Rchar
-    | Rboolean
+    : Rint 
+    | Rstring 
+    | Rchar 
+    | Rboolean 
+    | Rdouble 
     ;
 
-TIPO_AUX
-    : Rint          
-    | Rdouble       
-    | Rstring       
-    | Rchar         
-;
-EXP
-    : EXP mas EXP
-    | EXP menos EXP
-    | EXP mul EXP
-    | EXP div EXP
-    | EXP mod EXP
-    | EXP min EXP
-    | EXP max EXP
-    | EXP notEquals EXP
-    | EXP equals EXP
-    | EXP minEqual EXP
-    | EXP maxEqual EXP
-    | EXP and EXP
-    | EXP or EXP
-    | EXP opt EXP dosPun EXP                  
-    | corA EXP corC
-    | EXP inc
-    | EXP dec
-    | not EXP %prec unot
+//falta en el semantico    
+                    //Valores AST name, value, tipo,entorno, fila, columna
+EXP  
+    : EXP mas EXP  
+    | EXP menos EXP 
+    | EXP mul EXP 
+    | EXP pot EXP 
+    | EXP div EXP 
+    | EXP mod EXP 
+    | EXP min EXP 
+    | EXP max EXP 
+    | EXP notEquals EXP 
+    | EXP equals EXP 
+    | EXP minEqual EXP 
+    | EXP maxEqual EXP 
+    | EXP and EXP 
+    | EXP or EXP 
+    | EXP opt EXP dosPun EXP 
+    | corA EXP corC 
+    | EXP inc 
+    | EXP dec 
+    | not EXP %prec unot 
     | menos EXP %prec umenos 
-    | Cadena
-    | Char
-    | ID
-    | ID parA parC
-    | ID parA LST_EXP parC
-    | ID corA EXP corC
+    | Char 
+    | ID 
+    | ID parA parC 
+    | ID parA LST_EXP parC 
+    | ID corA EXP corC 
     | ID corA EXP corC corA EXP corC 
-    | entero
-    | decimal
-    | lit_boleanV
-    | lit_boleanF
-    | parA EXP parC
-    | parA TIPO_AUX parC %prec ucast
-    | RtoStr parA EXP parC %prec ucast
+    | entero 
+    | decimal 
+    | lit_boleanV 
+    | lit_boleanF 
+    | parA EXP parC 
+    | parA TIPO parC EXP %prec ucast 
+    | RtoStr parA EXP parC %prec ucast 
     | RtoLower parA EXP parC %prec ucast 
-    | RtoUpper parA EXP parC %prec ucast
-    | Rround parA EXP parC %prec ucast
-    | Rlength parA EXP parC %prec ucast
-    | Rtypeof parA EXP parC %prec ucast
-    
+    | RtoUpper parA EXP parC %prec ucast 
+    | Rround parA EXP parC %prec ucast 
+    | Rlength parA EXP parC %prec ucast 
+    | Rtypeof parA EXP parC %prec ucast 
     ;
 
-AUXVECTOR 
+AUXVECTOR  //Valores AST name, value, tipo,entorno, fila, columna
     : AUXVECTOR coma corA LST_EXP corC 
-    | corA LST_EXP corC
+    | corA LST_EXP corC 
     ;
 LST_EXP 
-    : LST_EXP coma EXP
-    | EXP
+    : LST_EXP coma EXP 
+    | EXP     
     ;
