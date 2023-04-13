@@ -455,7 +455,7 @@ export class Operador{
                     return Resultado;
                 }
                 break;
-            case "typeof":
+            case "typeOf":
                 Resultado= new ResOperacion();
                 Resultado1 = this.ejecutar(root.hijos[0]);
                 if(Resultado1.tipo != "error"){

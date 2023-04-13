@@ -612,10 +612,20 @@ export class Interprete{
                             break
                         }               
                 }
+                else if (root.hijos.length == 2){
+                    console.log(root.hijos)
+                        if(root.hijos[0].tipo == "void"){
+                            var metodo = new Metodo(root.hijos[0].value,root.hijos[0].tipo,root.hijos[1])
+                            TablaMetodos.getInstance().insertarMetodo(metodo)     
+                            console.log("metodo reconocido")
+                            break
+                        }               
+                }
                 break;
             case "LLAMADA": 
                 if (root.hijos.length == 1){
                     var metodo =  TablaMetodos.getInstance().getMetodo(root.hijos[0].value)
+                    console.log(root.hijos[0].value)
                     console.log(metodo)
                     metodo.body.hijos.forEach(hijo => code+= this.interpretar(hijo)); 
                     return code;

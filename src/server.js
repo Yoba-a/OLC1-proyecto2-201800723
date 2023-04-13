@@ -94,8 +94,8 @@ app.post('/prueba', urlencodedParser, (req, res) => {
     const resultado =  parser.parse(codevalue);  
     var int  =  new Interprete();
     const dot = imprimir(resultado);
-    var code = "";
-    //var code = int.analizar(resultado);
+    //var code = "";
+    var code = int.analizar(resultado);
     console.log("codigo",code);
     
     var errores = TablaErrores.getInstance().getErrores();
